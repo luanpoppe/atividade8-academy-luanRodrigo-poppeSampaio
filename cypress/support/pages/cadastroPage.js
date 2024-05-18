@@ -17,6 +17,14 @@ export class CadastroPage {
     tituloPagina = "h3"
     headerDescricao = ".register-account-header span"
 
+    header = ".navbar-content"
+    modal = ".modal-content"
+    modalButton = ".modal-content button"
+
+    mensagemDeErro(posicaoMensagem) {
+        return cy.get(".input-container").its(posicaoMensagem).find(".input-error")
+    }
+
 
     digitarNome(texto) {
         return cy.get(this.inputNome).type(texto)

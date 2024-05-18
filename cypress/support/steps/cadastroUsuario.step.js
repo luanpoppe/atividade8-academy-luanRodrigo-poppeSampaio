@@ -20,6 +20,7 @@ before(function () {
 Before(function () {
     cy.viewport("macbook-13")
     cy.intercept('POST', '/api/users').as('cadastroUsuario')
+    cy.intercept('POST', '/api/auth/login').as('logarUsuario')
 })
 
 After({ tags: "@userCreated" }, function () {
@@ -136,4 +137,74 @@ When('tento criar novo usuário com o mesmo email', function () {
 Then('deve aparecer uma mensagem informando não ser possível realizar a operação', function () {
     cy.get(".modal-body").contains("E-mail já cadastrado. Utilize outro e-mail").should("exist")
     cy.get(".modal-body").contains("h3", "Falha no cadastro.").should("exist")
+})
+
+When('tento fechar a mensagem clicando no botão disponível', function () {
+    cy.get(pgCadastro.modalButton).click()
+})
+
+When('tento fechar a mensagem clicando fora da mensagem', function () {
+    cy.get(pgCadastro.modal).click(-50, 50, {
+        force: true
+    })
+})
+
+Then('a mensagem deve ser fechada', function () {
+    cy.get(pgCadastro.modal).should("not.exist")
+})
+
+When('tento criar um usuário com um email já utilizado por outro usuário', function () {
+    api.createUser().then(function (resposta) {
+        user2 = resposta
+    }).then(function (resposta) {
+        const newUser = {
+            name: user.name,
+            email: user2.email,
+            password: user.password,
+        }
+        pgCadastro.criarUsuario(newUser)
+    })
+})
+
+When('tento cadastrar com a senha de confirmação diferente da senha escolhida', function () {
+    pgCadastro.digitarNome(user.name)
+    pgCadastro.digitarEmail(user.email)
+    pgCadastro.digitarSenha(user.password)
+    pgCadastro.digitarConfirmarSenha("senhaDiferente")
+
+    pgCadastro.clickCadastrar()
+})
+
+Then('deve aparecer uma mensagem de erro no cadastro {string}', function (mensagem) {
+    cy.get('@cadastroUsuario').should("not.exist")
+    pgCadastro.mensagemDeErro(3).should("contain.text", mensagem)
+})
+
+When('tento criar um usuário com um email inválido {string}', function (email) {
+    pgCadastro.digitarNome(user.name)
+    pgCadastro.digitarEmail(email)
+    pgCadastro.digitarSenha(user.password)
+    pgCadastro.digitarConfirmarSenha(user.password)
+
+    pgCadastro.clickCadastrar()
+})
+
+Then('deve aparecer uma mensagem de abaixo do campo email', function () {
+    cy.get(pgCadastro.modal).contains("h3", "Falha no cadastro.")
+    cy.get(pgCadastro.modal).contains("Não foi possível cadastrar o usuário.")
+    cy.wait('@cadastroUsuario').then(function (intercept) {
+        expect(intercept.response.statusCode).to.equal(400)
+    })
+})
+
+Then('deve ser realizado o login automaticamente do usuário criado', function () {
+    cy.wait('@logarUsuario').then(function (resposta) {
+        expect(resposta.response.statusCode).to.equal(200)
+    })
+})
+
+Then('as opções de navegação devem mudar para condizer com o usuário logado', function () {
+    cy.get(pgCadastro.header).find("a").should("contain.text", "Perfil")
+    cy.get(pgCadastro.header).find("a").should("not.contain.text", "Registre-se")
+    cy.get(pgCadastro.header).find("a").should("not.contain.text", "Login")
 })
