@@ -39,15 +39,26 @@ When('preencho os campos obrigatórios com valores válidos', function () {
     pgCadastro.digitarConfirmarSenha(user.password)
 })
 
+When('olho as informações da página', function () {
+
+})
+
+Then('a página deve conter informações sobre o cadastro de usuários', function () {
+    cy.get(pgCadastro.tituloPagina).should("have.text", "Cadastre-se").and("be.visible")
+    cy.get(pgCadastro.headerDescricao).should("have.text", "Crie uma conta para poder acessar Raromdb.").and("be.visible")
+    cy.get(pgCadastro.buttonCadastrar).should("have.text", "Cadastrar").and("be.visible")
+    cy.get("label").should("contain.text", "Nome:").and("contain.text", "E-mail:").and("contain.text", 'Senha').and("contain.text", "Confirmar senha:")
+})
+
 When('tento realizar o cadastro', function () {
     pgCadastro.clickCadastrar()
+})
+
+Then('deve aparecer uma mensagem de sucesso', function () {
     cy.wait('@cadastroUsuario').then(function (resposta) {
         userCreated = resposta.response.body
         userCreated.password = user.password
     })
-})
-
-Then('deve aparecer uma mensagem de sucesso', function () {
     cy.contains("Cadastro realizado!")
     cy.contains("h3", "Sucesso")
 })
@@ -189,7 +200,7 @@ When('tento criar um usuário com um email inválido {string}', function (email)
     pgCadastro.clickCadastrar()
 })
 
-Then('deve aparecer uma mensagem de abaixo do campo email', function () {
+Then('deve aparecer uma mensagem informando falha no cadastro', function () {
     cy.get(pgCadastro.modal).contains("h3", "Falha no cadastro.")
     cy.get(pgCadastro.modal).contains("Não foi possível cadastrar o usuário.")
     cy.wait('@cadastroUsuario').then(function (intercept) {
@@ -207,4 +218,44 @@ Then('as opções de navegação devem mudar para condizer com o usuário logado
     cy.get(pgCadastro.header).find("a").should("contain.text", "Perfil")
     cy.get(pgCadastro.header).find("a").should("not.contain.text", "Registre-se")
     cy.get(pgCadastro.header).find("a").should("not.contain.text", "Login")
+})
+
+When('tento cadastrar usuário com uma senha muito curta', function () {
+    const senha = "abc12"
+    pgCadastro.digitarNome(user.name)
+    pgCadastro.digitarEmail(user.email)
+    pgCadastro.digitarSenha(senha)
+    pgCadastro.digitarConfirmarSenha(senha)
+
+    pgCadastro.clickCadastrar()
+})
+
+Then('deve aparecer mensagem informando o erro {string}', function (mensagem) {
+    pgCadastro.mensagemDeErro(2).should("contain.text", mensagem)
+    pgCadastro.mensagemDeErro(3).should("contain.text", mensagem)
+})
+
+When('tento cadastrar com uma senha muito longa', function () {
+    const senha = "abc123abc123abc123"
+    pgCadastro.digitarNome(user.name)
+    pgCadastro.digitarEmail(user.email)
+    pgCadastro.digitarSenha(senha)
+    pgCadastro.digitarConfirmarSenha(senha)
+
+    pgCadastro.clickCadastrar()
+})
+
+When('tento cadastrar com qualquer valor de nome {string}', function (nome) {
+    user = {
+        name: faker.person.firstName(),
+        email: faker.internet.email(),
+        password: faker.internet.password(8),
+    }
+
+    pgCadastro.digitarNome(nome)
+    pgCadastro.digitarEmail(user.email)
+    pgCadastro.digitarSenha(user.password)
+    pgCadastro.digitarConfirmarSenha(user.password)
+
+    pgCadastro.clickCadastrar()
 })

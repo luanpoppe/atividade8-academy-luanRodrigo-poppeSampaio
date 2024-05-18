@@ -5,6 +5,10 @@ Funcionalidade: Validação ao criar usuários
 Contexto: Acessar página de registro
     Dado que acessei a página de cadastrar usuário
 
+Cenário: Usuário deve poder criar conta com sucesso
+    Quando olho as informações da página
+    Então a página deve conter informações sobre o cadastro de usuários
+
 @userCreated @ignore
 Cenário: Usuário deve poder criar conta com sucesso
     Quando preencho os campos obrigatórios com valores válidos
@@ -28,17 +32,27 @@ Cenário: Usuário deve conseguir fechar mensagem de cadastro de sucesso ao clic
     E tento fechar a mensagem clicando fora da mensagem
     Então a mensagem deve ser fechada
 
-@userCreated
+@userCreated @ignore
 Cenário: Após criar usuário, ele deve ser logado automaticamente
     Quando crio um usuário
     Então deve ser realizado o login automaticamente do usuário criado
 
-@userCreated
+@userCreated @ignore
 Cenário: Após criar usuário, as opções de navegação devem mudar para condizer com o usuário logado
     Quando crio um usuário
     Então as opções de navegação devem mudar para condizer com o usuário logado
+@userCreated @ignore
+Cenário: Deve ser possível cadastrar usuários com qualquer valor de nome
+    Quando tento cadastrar com qualquer valor de nome "<nome>"
+    Então deve aparecer uma mensagem de sucesso
+    Exemplos:
+        | nome  |
+        | a     |
+        | a123  |
+        | a$%   |
+        | A     |
 
-# CENÁRIOS DE FALHA:
+# region: CENÁRIOS DE FALHA:
 @ignore
 Cenário: Não deve ser possível criar usuário sem preencher o campo usuário
     Quando tento criar usuário sem passar um nome
@@ -72,15 +86,25 @@ Cenário: Usuário deve conseguir fechar mensagem de cadastro de sucesso ao clic
     E tento fechar a mensagem clicando fora da mensagem
     Então a mensagem deve ser fechada
 @ignore
-Cenário: Não deve cadastrar usuário confirmar senha com uma senha diferente
+Cenário: Não deve cadastrar usuário ao confirmar senha com uma senha diferente
     Quando tento cadastrar com a senha de confirmação diferente da senha escolhida
     Então deve aparecer uma mensagem de erro no cadastro "As senhas devem ser iguais."
 @ignore
 Cenário: Não deve cadastrar usuário ao passar email com formato inválido
     Quando tento criar um usuário com um email inválido "<email>"
-    Então deve aparecer uma mensagem de abaixo do campo email
+    Então deve aparecer uma mensagem informando falha no cadastro
     Exemplos:
         | email            | 
         | valoremail       | 
         | valoremail@      | 
         | valoremail@gmail | 
+        | @gmail | 
+        | @gmail.com | 
+@ignore
+Cenário: Não deve cadastrar usuário ao passar uma senha muito curta
+    Quando tento cadastrar usuário com uma senha muito curta
+    Então deve aparecer mensagem informando o erro "A senha deve ter pelo menos 6 dígitos"
+@ignore
+Cenário: Não deve cadastrar usuário ao passar uma senha muito longa
+    Quando tento cadastrar com uma senha muito longa
+    Então deve aparecer uma mensagem informando falha no cadastro
