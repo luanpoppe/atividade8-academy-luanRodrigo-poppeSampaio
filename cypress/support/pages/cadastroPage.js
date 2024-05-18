@@ -1,4 +1,12 @@
+import { faker } from "@faker-js/faker"
+
 export class CadastroPage {
+    newUser = {
+        name: faker.person.firstName(),
+        email: faker.internet.email(),
+        password: faker.internet.password(8),
+    }
+
     inputNome = '[name="name"]'
     inputEmail = '[name="email"]'
     inputSenha = '[name="password"]'
@@ -25,5 +33,21 @@ export class CadastroPage {
 
     clickCadastrar() {
         return cy.get(this.buttonCadastrar).click()
+    }
+
+    // region: Funções maiores
+    criarUsuario(newUser = this.newUser) {
+        cy.intercept('POST', '/api/users').as('cadastroUsuario')
+        this.digitarNome(newUser.name)
+        this.digitarEmail(newUser.email)
+        this.digitarSenha(newUser.password)
+        this.digitarConfirmarSenha(newUser.password)
+
+        this.clickCadastrar()
+        return cy.wait('@cadastroUsuario').then(function (resposta) {
+            const userCreated = resposta.response.body
+            userCreated.password = newUser.password
+            return userCreated
+        })
     }
 }

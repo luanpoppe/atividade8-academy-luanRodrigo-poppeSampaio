@@ -1,13 +1,31 @@
+import { faker } from "@faker-js/faker";
 export class Api {
     apiUrl = Cypress.env("apiUrl")
     user = {}
+
+    createUser() {
+        let userCreated = {
+            name: faker.person.firstName(),
+            email: faker.internet.email(),
+            password: faker.internet.password(8),
+        }
+
+        return cy.request("POST", `${this.apiUrl}/api/users`, userCreated)
+            .then(function (resposta) {
+                userCreated = {
+                    ...userCreated,
+                    ...resposta.body
+                }
+                return cy.wrap(userCreated)
+            })
+    }
 
     logar(email, senha) {
         return cy.request("POST", `${this.apiUrl}/api/auth/login`, {
             email: email,
             password: senha
         }).then((resposta) => {
-            this.user = {
+            return this.user = {
                 ...this.user,
                 token: resposta.body.accessToken
             }
