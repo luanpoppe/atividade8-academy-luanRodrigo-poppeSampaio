@@ -1,11 +1,14 @@
 export class LoginPage {
     tituloPagina = "h3"
-    headerDescricao = ".register-account-header span"
+    headerDescricao = ".login-content-header span"
 
     inputEmail = '[name="email"]'
     inputSenha = '[name="password"]'
 
     buttonLogin = ".login-button"
+
+    modal = ".modal-content"
+    modalButton = ".modal-content button"
 
     digitarEmail(texto) {
         return cy.get(this.inputEmail).type(texto)
@@ -24,5 +27,9 @@ export class LoginPage {
         this.digitarSenha(senha)
 
         this.clickLogar()
+    }
+
+    mensagemDeErro(posicaoMensagem) {
+        return cy.get(".input-container").find(".input-error").eq(posicaoMensagem)
     }
 }

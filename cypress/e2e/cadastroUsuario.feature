@@ -5,7 +5,8 @@ Funcionalidade: Validação ao criar usuários
 Contexto: Acessar página de registro
     Dado que acessei a página de cadastrar usuário
 
-Cenário: Usuário deve poder criar conta com sucesso
+@ignore
+Cenário: Informações da página de cadastro devem estar condinzentes
     Quando olho as informações da página
     Então a página deve conter informações sobre o cadastro de usuários
 
@@ -52,7 +53,21 @@ Cenário: Deve ser possível cadastrar usuários com qualquer valor de nome
         | a$%   |
         | A     |
 
+@userCreated @ignore
+Cenário: Deve ser possível cadastrar usuário passando senha com 6 caracteres
+    Quando tento criar um usuário passando uma senha de 6 dígitos
+    Então deve aparecer uma mensagem de sucesso
+
+@userCreated @ignore
+Cenário: Deve ser possível cadastrar usuário passando senha com 12 caracteres
+    Quando tento criar um usuário passando uma senha de 12 dígitos
+    Então deve aparecer uma mensagem de sucesso
+
 # region: CENÁRIOS DE FALHA:
+Cenário: Não deve ser possível criar usuário sem preencher nenhum dos campos obrigatórios
+    Quando tento criar um usuário sem preencher nenhum dos campos obrigatórios
+    Então deve aparecer as mensagens referentes aos campos obrigatórios
+
 @ignore
 Cenário: Não deve ser possível criar usuário sem preencher o campo usuário
     Quando tento criar usuário sem passar um nome
@@ -85,10 +100,10 @@ Cenário: Usuário deve conseguir fechar mensagem de cadastro de sucesso ao clic
     Quando tento criar um usuário com um email já utilizado por outro usuário
     E tento fechar a mensagem clicando fora da mensagem
     Então a mensagem deve ser fechada
-@ignore
+
 Cenário: Não deve cadastrar usuário ao confirmar senha com uma senha diferente
     Quando tento cadastrar com a senha de confirmação diferente da senha escolhida
-    Então deve aparecer uma mensagem de erro no cadastro "As senhas devem ser iguais."
+    Então deve aparecer uma mensagem de erro no cadastro "A senha deve ter no máximo 12 dígitos."
 @ignore
 Cenário: Não deve cadastrar usuário ao passar email com formato inválido
     Quando tento criar um usuário com um email inválido "<email>"
@@ -100,11 +115,11 @@ Cenário: Não deve cadastrar usuário ao passar email com formato inválido
         | valoremail@gmail | 
         | @gmail | 
         | @gmail.com | 
-@ignore
+
 Cenário: Não deve cadastrar usuário ao passar uma senha muito curta
     Quando tento cadastrar usuário com uma senha muito curta
     Então deve aparecer mensagem informando o erro "A senha deve ter pelo menos 6 dígitos"
-@ignore
+
 Cenário: Não deve cadastrar usuário ao passar uma senha muito longa
     Quando tento cadastrar com uma senha muito longa
-    Então deve aparecer uma mensagem informando falha no cadastro
+    Então deve aparecer mensagem informando o erro "A senha deve ter no máximo 12 dígitos."

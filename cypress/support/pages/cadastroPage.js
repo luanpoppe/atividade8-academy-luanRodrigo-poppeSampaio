@@ -22,7 +22,7 @@ export class CadastroPage {
     modalButton = ".modal-content button"
 
     mensagemDeErro(posicaoMensagem) {
-        return cy.get(".input-container").its(posicaoMensagem).find(".input-error")
+        return cy.get(".input-container").find(".input-error").eq(posicaoMensagem)
     }
 
 

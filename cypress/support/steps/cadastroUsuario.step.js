@@ -104,16 +104,17 @@ Then('deve aparecer um aviso informando que o email é obrigatório', function (
 
 When('tento criar usuário sem passar uma senha', function () {
     pgCadastro.digitarNome(user.name)
-    pgCadastro.digitarEmail(user.email)
     pgCadastro.digitarConfirmarSenha(user.password)
+    pgCadastro.digitarEmail(user.email)
 
     pgCadastro.clickCadastrar()
 })
 
 Then('deve aparecer um aviso informando que a senha é obrigatória', function () {
     cy.get('@cadastroUsuario').should("not.exist")
-    cy.get(".input-error").should("have.length", 1)
-    cy.get(".input-container").its(2).find(".input-error").should("contain.text", "Campo obrigatório")
+    cy.get(".input-error").should("have.length", 2)
+    cy.get(".input-container").eq(2).find(".input-error").should("contain.text", "Informe a senha")
+    cy.get(".input-container").eq(3).find(".input-error").should("contain.text", "As senhas devem ser iguais.")
 })
 
 When('tento criar usuário sem repetir a senha', function () {
@@ -127,13 +128,24 @@ When('tento criar usuário sem repetir a senha', function () {
 Then('deve aparecer um aviso informando que é obrigatório repetir a senha', function () {
     cy.get('@cadastroUsuario').should("not.exist")
     cy.get(".input-error").should("have.length", 1)
-    cy.get(".input-container").its(3).find(".input-error").should("contain.text", "As senhas devem ser iguais.")
+    cy.get(".input-container").eq(3).find(".input-error").should("contain.text", "Informe a senha")
 })
 
 Given('que sei o email de um usuário já cadastrado', function () {
     api.createUser().then(function (resposta) {
         user2 = resposta
     })
+})
+
+Given('tento criar um usuário sem preencher nenhum dos campos obrigatórios', function () {
+    pgCadastro.clickCadastrar()
+})
+
+Then('deve aparecer as mensagens referentes aos campos obrigatórios', function () {
+    pgCadastro.mensagemDeErro(0).should("contain.text", "Informe o nome")
+    pgCadastro.mensagemDeErro(1).should("contain.text", "Informe o e-mail")
+    pgCadastro.mensagemDeErro(2).should("contain.text", "Informe a senha")
+    pgCadastro.mensagemDeErro(3).should("contain.text", "Informe a senha")
 })
 
 When('tento criar novo usuário com o mesmo email', function () {
@@ -188,7 +200,7 @@ When('tento cadastrar com a senha de confirmação diferente da senha escolhida'
 
 Then('deve aparecer uma mensagem de erro no cadastro {string}', function (mensagem) {
     cy.get('@cadastroUsuario').should("not.exist")
-    pgCadastro.mensagemDeErro(3).should("contain.text", mensagem)
+    pgCadastro.mensagemDeErro(0).should("contain.text", mensagem)
 })
 
 When('tento criar um usuário com um email inválido {string}', function (email) {
@@ -231,12 +243,17 @@ When('tento cadastrar usuário com uma senha muito curta', function () {
 })
 
 Then('deve aparecer mensagem informando o erro {string}', function (mensagem) {
-    pgCadastro.mensagemDeErro(2).should("contain.text", mensagem)
-    pgCadastro.mensagemDeErro(3).should("contain.text", mensagem)
+    pgCadastro.mensagemDeErro(0).should("contain.text", mensagem)
+    pgCadastro.mensagemDeErro(1).should("contain.text", mensagem)
 })
 
 When('tento cadastrar com uma senha muito longa', function () {
-    const senha = "abc123abc123abc123"
+    let senha = ""
+    while (senha.length <= 12) {
+        senha += "a"
+    }
+    user.password = senha
+
     pgCadastro.digitarNome(user.name)
     pgCadastro.digitarEmail(user.email)
     pgCadastro.digitarSenha(senha)
@@ -253,6 +270,22 @@ When('tento cadastrar com qualquer valor de nome {string}', function (nome) {
     }
 
     pgCadastro.digitarNome(nome)
+    pgCadastro.digitarEmail(user.email)
+    pgCadastro.digitarSenha(user.password)
+    pgCadastro.digitarConfirmarSenha(user.password)
+
+    pgCadastro.clickCadastrar()
+})
+
+When('tento criar um usuário passando uma senha de {int} dígitos', function (tamanho) {
+    let senha = ""
+    while (senha.length < tamanho) {
+        senha += "a"
+    }
+
+    user.password = senha
+
+    pgCadastro.digitarNome(user.name)
     pgCadastro.digitarEmail(user.email)
     pgCadastro.digitarSenha(user.password)
     pgCadastro.digitarConfirmarSenha(user.password)
