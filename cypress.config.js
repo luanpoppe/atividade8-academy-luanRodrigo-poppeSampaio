@@ -8,7 +8,7 @@ module.exports = defineConfig({
     specPattern: "**/*.feature",
     env: {
       apiUrl: "https://raromdb-3c39614e42d4.herokuapp.com",
-      // TAGS: "not @ignore",
+      TAGS: "not @ignore",
       // TAGS: "@only",
     },
     baseUrl: "https://raromdb-frontend-c7d7dc3305a0.herokuapp.com/",

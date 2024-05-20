@@ -7,7 +7,6 @@ const pgLogin = new LoginPage()
 const api = new Api()
 let user
 let userCreated
-let user2
 
 before(function () {
     user = {
