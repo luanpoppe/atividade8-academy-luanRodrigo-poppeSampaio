@@ -32,31 +32,17 @@ Given('olho as informações da página', function () {
 
 })
 
-Then('a página deve conter informações sobre o login de usuários', function () {
-    cy.get(pgLogin.tituloPagina).should("have.text", "Login").and("be.visible")
-    cy.get(pgLogin.headerDescricao).should("have.text", "Entre com suas credenciais").and("be.visible")
-    cy.get(pgLogin.buttonLogin).should("have.text", "Login").and("be.visible")
-
-    cy.get(pgLogin.inputEmail).should("have.attr", "placeholder", "E-mail")
-    cy.get(pgLogin.inputSenha).should("have.attr", "placeholder", "Password")
-})
-
 Given('possuo dados de login de um usuário', function () {
     api.createUser().then(function (resposta) {
         userCreated = resposta
     })
 })
 
-Then('tento realizar o login', function () {
-    pgLogin.logar(userCreated.email, userCreated.password)
-})
+Given('que tentei realizar o login com dados incorretos', function () {
+    pgLogin.digitarEmail(user.email)
+    pgLogin.digitarSenha("senhaIncorreta")
 
-Then('o login deve ser realizado com sucesso', function () {
-    cy.wait('@login').then(function (resposta) {
-        expect(resposta.response.statusCode).to.equal(200)
-        expect(resposta.response.body).to.have.property("accessToken")
-    })
-    cy.url().should("equal", "https://raromdb-frontend-c7d7dc3305a0.herokuapp.com/")
+    pgLogin.clickLogar()
 })
 
 When('tento realizar o login passando um valor de senha errado', function () {
@@ -82,37 +68,17 @@ When('deve aparecer mensagem informando que não foi possível realizar login', 
     pgLogin.mensagemDeErro(1).should("have.text", "Informe a senha")
 })
 
-Then('deve aparecer mensagem informando que o email é obrigatório {string}', function (mensagem) {
-    cy.get('@login').should("not.exist")
-    pgLogin.mensagemDeErro(0).should("have.text", mensagem)
-})
-
 When('tento realizar o login sem passar um valor de senha', function () {
     pgLogin.digitarEmail(user.email)
 
     pgLogin.clickLogar()
 })
 
-Then('deve aparecer mensagem informando que a senha é obrigatório {string}', function (mensagem) {
-    pgLogin.mensagemDeErro(0).should("have.text", mensagem)
-})
-
 When('tento realizar o login passando um email incorreto', function () {
     pgLogin.logar("emailIncorreto@gmail.com", user.password)
 })
 
-Then('deve aparecer mensagem informando falha ao autenticar', function () {
-    cy.get(pgLogin.modal).should("contain.text", "Usuário ou senha inválidos.").and("contain.text", "Falha ao autenticar")
-})
-
 When('tento realizar o login passando uma senha incorreta', function () {
-    pgLogin.digitarEmail(user.email)
-    pgLogin.digitarSenha("senhaIncorreta")
-
-    pgLogin.clickLogar()
-})
-
-Given('que tentei realizar o login com dados incorretos', function () {
     pgLogin.digitarEmail(user.email)
     pgLogin.digitarSenha("senhaIncorreta")
 
@@ -129,7 +95,40 @@ When('tento fechar a mensagem clicando fora da mensagem', function () {
     })
 })
 
+Then('a página deve conter informações sobre o login de usuários', function () {
+    cy.get(pgLogin.tituloPagina).should("have.text", "Login").and("be.visible")
+    cy.get(pgLogin.headerDescricao).should("have.text", "Entre com suas credenciais").and("be.visible")
+    cy.get(pgLogin.buttonLogin).should("have.text", "Login").and("be.visible")
+
+    cy.get(pgLogin.inputEmail).should("have.attr", "placeholder", "E-mail")
+    cy.get(pgLogin.inputSenha).should("have.attr", "placeholder", "Password")
+})
+
+Then('tento realizar o login', function () {
+    pgLogin.logar(userCreated.email, userCreated.password)
+})
+
+Then('o login deve ser realizado com sucesso', function () {
+    cy.wait('@login').then(function (resposta) {
+        expect(resposta.response.statusCode).to.equal(200)
+        expect(resposta.response.body).to.have.property("accessToken")
+    })
+    cy.url().should("equal", "https://raromdb-frontend-c7d7dc3305a0.herokuapp.com/")
+})
+
+Then('deve aparecer mensagem informando que o email é obrigatório {string}', function (mensagem) {
+    cy.get('@login').should("not.exist")
+    pgLogin.mensagemDeErro(0).should("have.text", mensagem)
+})
+
+Then('deve aparecer mensagem informando que a senha é obrigatório {string}', function (mensagem) {
+    pgLogin.mensagemDeErro(0).should("have.text", mensagem)
+})
+
+Then('deve aparecer mensagem informando falha ao autenticar', function () {
+    cy.get(pgLogin.modal).should("contain.text", "Usuário ou senha inválidos.").and("contain.text", "Falha ao autenticar")
+})
+
 Then('a mensagem deve ser fechada', function () {
     cy.get(pgLogin.modal).should("not.exist")
 })
-
