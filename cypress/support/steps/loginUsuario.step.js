@@ -52,7 +52,10 @@ Then('tento realizar o login', function () {
 })
 
 Then('o login deve ser realizado com sucesso', function () {
-    cy.wait('@login')
+    cy.wait('@login').then(function (resposta) {
+        expect(resposta.response.statusCode).to.equal(200)
+        expect(resposta.response.body).to.have.property("accessToken")
+    })
     cy.url().should("equal", "https://raromdb-frontend-c7d7dc3305a0.herokuapp.com/")
 })
 

@@ -13,7 +13,7 @@ let user
 let userCreated
 const siteUrl = "https://raromdb-frontend-c7d7dc3305a0.herokuapp.com/"
 
-After(function () {
+After({ tags: "userCreated" }, function () {
     api.deleteUser(userCreated.id, userCreated.email, userCreated.password)
 })
 
@@ -167,6 +167,7 @@ When('tento alterar a senha do usuário passando um valor muito curto', function
 Then('deve aparecer uma mensagem informando que as senhas não estão válidas {string}', function (mensagem) {
     pgGerenciamento.mensagemErro(3).should("contain.text", mensagem)
     pgGerenciamento.mensagemErro(4).should("contain.text", mensagem)
+    cy.get("@salvarUsuario").should("not.exist")
 })
 
 When('tento alterar a senha do usuário passando um valor muito longo', function () {
@@ -180,16 +181,110 @@ When('tento alterar a senha do usuário passando um valor muito longo', function
 Then('deve aparecer uma mensagem informando que não foi possível atualizar os dados', function () {
     cy.get(pgGerenciamento.modalTitulo).should("have.text", "Ocorreu um erro")
     cy.get(pgGerenciamento.modalDescricao).should("have.text", "Não foi possível atualizar os dados.")
+    cy.wait("@salvarUsuario").then(function (resposta) {
+        expect(resposta.response.statusCode).to.equal(400)
+    })
 })
 
 When('inicio a operação de mudar de senha', function () {
     pgGerenciamento.clickAlterarSenha()
     cy.get(pgGerenciamento.buttonCancelarAlteracaoDeSenha).should("have.text", "Cancelar")
-    cy.get(pgGerenciamento.buttonCancelarAlteracaoDeSenha).click()
-    cy.get(pgGerenciamento.buttonAlterarSenha).should("have.text", "Alterar senha")
-
+    cy.get(pgGerenciamento.inputSenha).should("be.enabled")
+    cy.get(pgGerenciamento.inputConfirmarSenha).should("be.enabled")
 })
 
 Then('deve ser possível cancelar esta operação de mudar de senha', function () {
+    cy.get(pgGerenciamento.buttonCancelarAlteracaoDeSenha).click()
+    cy.get(pgGerenciamento.buttonAlterarSenha).should("have.text", "Alterar senha")
+    cy.get(pgGerenciamento.inputSenha).should("be.disabled")
+    cy.get(pgGerenciamento.inputConfirmarSenha).should("be.disabled")
+})
 
+When('tento alterar a senha do usuário passando um valor com {string} caracteres', function (qtd) {
+    let novaSenha = ""
+    while (novaSenha.length != qtd) {
+        novaSenha += "a"
+    }
+    userCreated.password = novaSenha
+
+    pgGerenciamento.alterarSenha(novaSenha)
+})
+
+When('tento alterar a senha passando um valor diferente para senha e para confirmação da senha', function () {
+    pgGerenciamento.clickAlterarSenha()
+    cy.get(pgGerenciamento.inputSenha).type("novaSenha")
+    cy.get(pgGerenciamento.inputConfirmarSenha).type("valorErrado")
+    pgGerenciamento.clickSalvar()
+})
+
+Then('deve aparecer uma mensagem informando que as dvem estar iguais {string}', function (mensagem) {
+    pgGerenciamento.mensagemErro(4).should("have.text", mensagem)
+    cy.get("@salvarUsuario").should("not.exist")
+})
+
+When('tento alterar o usuário sem passar um novo valor de nome', function () {
+    cy.get(pgGerenciamento.inputName).clear()
+    pgGerenciamento.clickSalvar()
+})
+
+Then('deve aparecer uma mensagem informando a obrigatoriedade de se passar um nome {string}', function (mensagem) {
+    pgGerenciamento.mensagemErro(0).should("have.text", mensagem)
+    cy.get("@salvarUsuario").should("not.exist")
+})
+
+When('tento alterar a senha do usuário sem passar um novo valor de senha', function () {
+    pgGerenciamento.clickAlterarSenha()
+    cy.get(pgGerenciamento.inputConfirmarSenha).type("novaSenha")
+    pgGerenciamento.clickSalvar()
+})
+
+Then('deve aparecer uma mensagem informando a obrigatoriedade de se passar uma senha {string}', function (mensagem) {
+    pgGerenciamento.mensagemErro(3).should("have.text", mensagem)
+    cy.get("@salvarUsuario").should("not.exist")
+})
+
+When('tento alterar a senha do usuário sem passar um valor na confirmação da senha', function () {
+    pgGerenciamento.clickAlterarSenha()
+    cy.get(pgGerenciamento.inputSenha).type("novaSenha")
+    pgGerenciamento.clickSalvar()
+})
+
+Then('deve aparecer uma mensagem informando informando que não foi possível salvar a senha {string}', function (mensagem) {
+    pgGerenciamento.mensagemErro(4).should("have.text", mensagem)
+    cy.get("@salvarUsuario").should("not.exist")
+})
+
+When('alterei as informações do usuário', function () {
+    cy.intercept('PUT', '/api/users/*').as('salvarUsuario')
+    cy.contains("a", "Perfil").click()
+    cy.get(pgPerfil.buttonGerenciarConta).click()
+
+    userCreated.name = "Novo Nome"
+    cy.get(pgGerenciamento.inputName).clear().type(userCreated.name)
+
+    pgGerenciamento.clickSalvar()
+})
+
+When('tento fechar a mensagem de sucesso clicando no botão disponível', function () {
+    cy.get(pgGerenciamento.modalBotao).click()
+})
+
+Then('a mensagem de sucesso deve ser fechada', function () {
+    cy.get(pgGerenciamento.modal).should("not.exist")
+})
+
+When('tento fechar a mensagem de sucesso clicando fora da mensagem', function () {
+    cy.get(pgGerenciamento.modalBotao).click(-50, 20, { force: true })
+})
+
+When('tento acessar a seção de perfil sem estar logado com um usuário', function () {
+    cy.visit("/profile")
+})
+
+Then('sou redirecionado para a página de login', function () {
+    cy.location("pathname").should("equal", "/login")
+})
+
+When('tento acessar a seção de gerenciamento de conta sem estar logado com um usuário', function () {
+    cy.visit("/account")
 })
