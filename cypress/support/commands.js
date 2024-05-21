@@ -1,25 +1,59 @@
-// ***********************************************
-// This example commands.js shows you how to
-// create various custom commands and overwrite
-// existing commands.
-//
-// For more comprehensive examples of custom
-// commands please read more here:
-// https://on.cypress.io/custom-commands
-// ***********************************************
-//
-//
-// -- This is a parent command --
-// Cypress.Commands.add('login', (email, password) => { ... })
-//
-//
-// -- This is a child command --
-// Cypress.Commands.add('drag', { prevSubject: 'element'}, (subject, options) => { ... })
-//
-//
-// -- This is a dual command --
-// Cypress.Commands.add('dismiss', { prevSubject: 'optional'}, (subject, options) => { ... })
-//
-//
-// -- This will overwrite an existing command --
-// Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
+import { faker } from "@faker-js/faker";
+
+let apiUrl = Cypress.env("apiUrl")
+let user = {}
+
+Cypress.Commands.add("createUser", function () {
+    let userCreated = {
+        name: faker.person.firstName(),
+        email: faker.internet.email(),
+        password: faker.internet.password(8),
+    }
+
+    return cy.request("POST", `${apiUrl}/api/users`, userCreated)
+        .then(function (resposta) {
+            userCreated = {
+                ...userCreated,
+                ...resposta.body
+            }
+            return cy.wrap(userCreated)
+        })
+})
+
+
+Cypress.Commands.add("logar", function (email, senha) {
+    return cy.request("POST", `${apiUrl}/api/auth/login`, {
+        email: email,
+        password: senha
+    }).then((resposta) => {
+        return {
+            email: email,
+            password: senha,
+            token: resposta.body.accessToken
+        }
+    })
+})
+
+Cypress.Commands.add("tornarAdmin", function (token) {
+    return cy.request({
+        method: 'PATCH',
+        url: `${apiUrl}/api/users/admin`,
+        auth: {
+            bearer: token
+        },
+    })
+})
+
+Cypress.Commands.add("deleteUser", function (userId, email, senha, token) {
+    return cy.logar(email, senha).then((resposta) => {
+        this.tornarAdmin(resposta.body.accessToken).then((res2) => {
+            cy.request({
+                method: 'DELETE',
+                url: `${apiUrl}/api/users/${userId}`,
+                auth: {
+                    bearer: token
+                },
+            })
+        })
+    })
+})
