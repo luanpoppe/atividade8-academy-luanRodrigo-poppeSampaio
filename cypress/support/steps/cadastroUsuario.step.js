@@ -1,10 +1,8 @@
 import { After, Before, Given, Then, When } from "@badeball/cypress-cucumber-preprocessor";
 import { CadastroPage } from "../pages/cadastroPage";
 import { faker } from "@faker-js/faker";
-import { Api } from "../api";
 
 const pgCadastro = new CadastroPage()
-const api = new Api()
 let user
 let userCreated
 let user2
@@ -24,7 +22,7 @@ Before(function () {
 })
 
 After({ tags: "@userCreated" }, function () {
-    api.deleteUser(userCreated.id, userCreated.email, userCreated.password)
+    cy.deleteUser(userCreated.id, userCreated.email, userCreated.password)
 })
 
 Given('que acessei a página de cadastrar usuário', function () {
@@ -33,7 +31,7 @@ Given('que acessei a página de cadastrar usuário', function () {
 })
 
 Given('que sei o email de um usuário já cadastrado', function () {
-    api.createUser().then(function (resposta) {
+    cy.createUser().then(function (resposta) {
         user2 = resposta
     })
 })
@@ -115,9 +113,8 @@ When('tento fechar a mensagem clicando fora da mensagem', function () {
 })
 
 When('tento criar um usuário com um email já utilizado por outro usuário', function () {
-    api.createUser().then(function (resposta) {
+    cy.createUser().then(function (resposta) {
         user2 = resposta
-    }).then(function () {
         const newUser = {
             name: user.name,
             email: user2.email,

@@ -10,7 +10,7 @@ Cenário: Informações da página de cadastro devem estar condizentes
     Quando olho as informações da página
     Então a página deve conter informações sobre o cadastro de usuários
 
-@userCreated @only
+@userCreated
 Cenário: Usuário deve poder criar conta com sucesso
     Quando preencho os campos obrigatórios com valores válidos
     E tento realizar o cadastro

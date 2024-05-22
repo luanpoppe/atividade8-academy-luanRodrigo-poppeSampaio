@@ -44,9 +44,10 @@ Cypress.Commands.add("tornarAdmin", function (token) {
     })
 })
 
-Cypress.Commands.add("deleteUser", function (userId, email, senha, token) {
+Cypress.Commands.add("deleteUser", function (userId, email, senha) {
     return cy.logar(email, senha).then((resposta) => {
-        this.tornarAdmin(resposta.body.accessToken).then((res2) => {
+        const token = resposta.token
+        cy.tornarAdmin(token).then(() => {
             cy.request({
                 method: 'DELETE',
                 url: `${apiUrl}/api/users/${userId}`,
