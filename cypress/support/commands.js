@@ -3,10 +3,10 @@ import { faker } from "@faker-js/faker";
 let apiUrl = Cypress.env("apiUrl")
 let user = {}
 
-Cypress.Commands.add("createUser", function () {
+Cypress.Commands.add("createUser", function (email = null) {
     let userCreated = {
         name: faker.person.firstName(),
-        email: faker.internet.email(),
+        email: email ? email : faker.internet.email(),
         password: faker.internet.password(8),
     }
 

@@ -127,3 +127,8 @@ Cenário: Não deve cadastrar usuário ao passar uma senha muito curta
 Cenário: Não deve cadastrar usuário ao passar uma senha muito longa
     Quando tento cadastrar com uma senha muito longa
     Então deve aparecer mensagem informando o erro "A senha deve ter no máximo 12 dígitos."
+
+# Cenário: Não deve cadastrar um usuário quando já existe outro usuário com o mesmo email porém com letras em caps lock
+#     E que sei o email de um usuário cadastrado todo em caps lock
+#     Quando tento criar novo usuário com o mesmo email porém todo com letras minúsculas
+#     Então deve aparecer uma mensagem informando não ser possível realizar a operação

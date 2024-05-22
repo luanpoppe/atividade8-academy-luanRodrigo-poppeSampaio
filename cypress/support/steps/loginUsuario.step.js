@@ -1,10 +1,8 @@
 import { After, Before, Given, Then, When } from "@badeball/cypress-cucumber-preprocessor";
 import { faker } from "@faker-js/faker";
-import { Api } from "../api";
 import { LoginPage } from "../pages/loginPage";
 
 const pgLogin = new LoginPage()
-const api = new Api()
 let user
 let userCreated
 
@@ -21,7 +19,7 @@ Before(function () {
 })
 
 After({ tags: "@usuarioCriado" }, function () {
-    api.deleteUser(userCreated.id, userCreated.email, userCreated.password)
+    cy.deleteUser(userCreated.id, userCreated.email, userCreated.password)
 })
 
 Given('que acessei a página de login', function () {
@@ -33,7 +31,13 @@ Given('olho as informações da página', function () {
 })
 
 Given('possuo dados de login de um usuário', function () {
-    api.createUser().then(function (resposta) {
+    cy.createUser().then(function (resposta) {
+        userCreated = resposta
+    })
+})
+
+Given('que criei um usuário com um email todo em caps lock', function () {
+    cy.createUser(user.email.toUpperCase()).then(function (resposta) {
         userCreated = resposta
     })
 })
@@ -43,6 +47,14 @@ Given('que tentei realizar o login com dados incorretos', function () {
     pgLogin.digitarSenha("senhaIncorreta")
 
     pgLogin.clickLogar()
+})
+
+When('tento realizar o login', function () {
+    pgLogin.logar(userCreated.email, userCreated.password)
+})
+
+When('tento logar com o mesmo email mas todo com letras minúscuals', function () {
+    pgLogin.logar(userCreated.email.toLowerCase(), userCreated.password)
 })
 
 When('tento realizar o login passando um valor de senha errado', function () {
@@ -102,10 +114,6 @@ Then('a página deve conter informações sobre o login de usuários', function 
 
     cy.get(pgLogin.inputEmail).should("have.attr", "placeholder", "E-mail")
     cy.get(pgLogin.inputSenha).should("have.attr", "placeholder", "Password")
-})
-
-Then('tento realizar o login', function () {
-    pgLogin.logar(userCreated.email, userCreated.password)
 })
 
 Then('o login deve ser realizado com sucesso', function () {

@@ -84,7 +84,7 @@ Cenário: Usuário não deve conseguir alterar sua senha passando um valor muito
     Então deve aparecer uma mensagem informando que não foi possível atualizar os dados
 
 @userCreated
-Cenário: Deve ser possível atualizar senha passando um senha com 6 e 12 dígitos
+Esquema do Cenário: Deve ser possível atualizar senha passando um senha com 6 e 12 dígitos
     Dado que sou um usuário do tipo comum
     E que acessei a seção do site de gerenciar conta
     Quando tento alterar a senha do usuário passando um valor com "<numero>" caracteres
@@ -95,7 +95,7 @@ Cenário: Deve ser possível atualizar senha passando um senha com 6 e 12 dígit
         | 12     |
 
 @userCreated
-Cenário: Usuário não deve conseguir alterar sua senha passando valor de senha diferente na confirmação da senha
+Cenário: Usuário não deve conseguir alterar sua senha passando um valor diferente na confirmação da senha
     Dado que sou um usuário do tipo comum
     E que acessei a seção do site de gerenciar conta
     Quando tento alterar a senha passando um valor diferente para senha e para confirmação da senha

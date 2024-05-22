@@ -7,15 +7,13 @@ let user
 let userCreated
 let user2
 
-before(function () {
+Before(function () {
     user = {
         name: faker.person.firstName(),
         email: faker.internet.email(),
         password: faker.internet.password(8),
     }
-})
 
-Before(function () {
     cy.viewport("macbook-13")
     cy.intercept('POST', '/api/users').as('cadastroUsuario')
     cy.intercept('POST', '/api/auth/login').as('logarUsuario')
@@ -36,9 +34,18 @@ Given('que sei o email de um usuário já cadastrado', function () {
     })
 })
 
+Given('que sei o email de um usuário cadastrado todo em caps lock', function () {
+    cy.createUser(user.email.toUpperCase()).then(function (resposta) {
+        user2 = resposta
+    })
+})
+
 Given('tento criar um usuário sem preencher nenhum dos campos obrigatórios', function () {
     pgCadastro.clickCadastrar()
 })
+
+
+// region: WHEN
 
 When('preencho os campos obrigatórios com valores válidos', function () {
     pgCadastro.digitarNome(user.name)
@@ -97,6 +104,15 @@ When('tento criar novo usuário com o mesmo email', function () {
     const newUser = {
         name: user.name,
         email: user2.email,
+        password: user.password,
+    }
+    pgCadastro.criarUsuario(newUser)
+})
+
+When('tento criar novo usuário com o mesmo email porém todo com letras minúsculas', function () {
+    const newUser = {
+        name: user.name,
+        email: user2.email.toLowerCase(),
         password: user.password,
     }
     pgCadastro.criarUsuario(newUser)
@@ -192,6 +208,17 @@ When('tento criar um usuário passando uma senha de {int} dígitos', function (t
 
     pgCadastro.clickCadastrar()
 })
+
+When('Quando tento criar um usuário com um email já existente porém todo com letras em caps lock', function () {
+    pgCadastro.digitarNome(user.name)
+    pgCadastro.digitarEmail(user.email)
+    pgCadastro.digitarSenha(user.password)
+    pgCadastro.digitarConfirmarSenha(user.password)
+
+    pgCadastro.clickCadastrar()
+})
+
+// region: THEN
 
 Then('a página deve conter informações sobre o cadastro de usuários', function () {
     cy.get(pgCadastro.tituloPagina).should("have.text", "Cadastre-se").and("be.visible")

@@ -1,25 +1,22 @@
 import { After, Given, Then, When } from "@badeball/cypress-cucumber-preprocessor";
-import { Api } from "../api";
 import { LoginPage } from "../pages/loginPage";
 import { PerfilPage } from "../pages/perfilPage";
 import { GerenciamentoContaPage } from "../pages/gerenciamentoContaPage";
 
 const pgLogin = new LoginPage()
-const api = new Api()
 const pgPerfil = new PerfilPage()
 const pgGerenciamento = new GerenciamentoContaPage()
 let userCreated
 const siteUrl = "https://raromdb-frontend-c7d7dc3305a0.herokuapp.com/"
 
 After({ tags: "userCreated" }, function () {
-    api.deleteUser(userCreated.id, userCreated.email, userCreated.password)
+    cy.deleteUser(userCreated.id, userCreated.email, userCreated.password)
 })
 
 Given('que fiz o login com um usuário', function () {
     cy.visit("/login")
-    api.createUser().then(function (resposta) {
+    cy.createUser().then(function (resposta) {
         userCreated = resposta
-    }).then(function () {
         pgLogin.logar(userCreated.email, userCreated.password)
     })
 })
@@ -36,10 +33,8 @@ Given('que acessei a seção do site de gerenciar conta', function () {
 
 Given('que sou um usuário do tipo comum', function () {
     cy.visit("/login")
-    api.createUser().then(function (resposta) {
+    cy.createUser().then(function (resposta) {
         userCreated = resposta
-        cy.log('userCreated', userCreated)
-    }).then(function () {
         pgLogin.logar(userCreated.email, userCreated.password)
     })
 })
