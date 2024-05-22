@@ -14,12 +14,12 @@ Cenário: Informações da página de cadastro devem estar condizentes
 Cenário: Usuário deve poder criar conta com sucesso
     Quando preencho os campos obrigatórios com valores válidos
     E tento realizar o cadastro
-    Então deve aparecer uma mensagem de sucesso
+    Então deve ser mostrado uma mensagem de sucesso
 
-@userCreated 
+@userCreated
 Cenário: Usuário criado deve ser do tipo comum
     Quando crio um usuário
-    Então o seu tipo deve ser comum
+    Então sua conta deve ser do tipo comum
 
 @userCreated
 Cenário: Novos usuários devem ter sua conta ativa
@@ -38,19 +38,19 @@ Cenário: Usuário deve conseguir fechar mensagem de cadastro de sucesso ao clic
     E tento fechar a mensagem clicando fora da mensagem
     Então a mensagem deve ser fechada
 
-@userCreated 
+@userCreated
 Cenário: Após criar usuário, ele deve ser logado automaticamente
     Quando crio um usuário
     Então deve ser realizado o login automaticamente do usuário criado
 
-@userCreated 
+@userCreated
 Cenário: Após criar usuário, as opções de navegação devem mudar para condizer com o usuário logado
     Quando crio um usuário
     Então as opções de navegação devem mudar para condizer com o usuário logado
-@userCreated 
+@userCreated
 Esquema do Cenário: Deve ser possível cadastrar usuários com qualquer valor de nome
     Quando tento cadastrar com qualquer valor de nome "<nome>"
-    Então deve aparecer uma mensagem de sucesso
+    Então deve ser mostrado uma mensagem de sucesso
     Exemplos:
         | nome  |
         | a     |
@@ -61,12 +61,12 @@ Esquema do Cenário: Deve ser possível cadastrar usuários com qualquer valor d
 @userCreated 
 Cenário: Deve ser possível cadastrar usuário passando senha com 6 caracteres
     Quando tento criar um usuário passando uma senha de 6 dígitos
-    Então deve aparecer uma mensagem de sucesso
+    Então deve ser mostrado uma mensagem de sucesso
 
 @userCreated 
 Cenário: Deve ser possível cadastrar usuário passando senha com 12 caracteres
     Quando tento criar um usuário passando uma senha de 12 dígitos
-    Então deve aparecer uma mensagem de sucesso
+    Então deve ser mostrado uma mensagem de sucesso
 
 # region: CENÁRIOS DE FALHA:
 
@@ -127,6 +127,8 @@ Cenário: Não deve cadastrar usuário ao passar uma senha muito curta
 Cenário: Não deve cadastrar usuário ao passar uma senha muito longa
     Quando tento cadastrar com uma senha muito longa
     Então deve aparecer mensagem informando o erro "A senha deve ter no máximo 12 dígitos."
+
+# Cenários não mais necessários:
 
 # Cenário: Não deve cadastrar um usuário quando já existe outro usuário com o mesmo email porém com letras em caps lock
 #     E que sei o email de um usuário cadastrado todo em caps lock

@@ -15,12 +15,6 @@ Cenário: Usuário deve conseguir logar
     Quando tento realizar o login
     Então o login deve ser realizado com sucesso
 
-# @usuarioCriado
-# Cenário: Usuário deve conseguir logar mesmo sem diferenciar as letras minúsculas e maiúsculas do email criado
-#     Dado que criei um usuário com um email todo em caps lock
-#     Quando tento logar com o mesmo email mas todo com letras minúscuals
-#     Então o login deve ser realizado com sucesso
-
 # region: Cenários de Falha 
 
 Cenário: Não deve ser possível logar sem preencher os campos obrigatórios
@@ -48,7 +42,16 @@ Cenário: Usuário deve conseguir fechar mensagem de falha no login ao clicar no
     Quando tento fechar a mensagem clicando no botão disponível
     Então a mensagem deve ser fechada
 
-Cenário: Usuário deve conseguir fechar mensagem de dalha no login ao clicar fora da mensagem
+Cenário: Usuário deve conseguir fechar mensagem de falha no login ao clicar fora da mensagem
     E que tentei realizar o login com dados incorretos
     Quando tento fechar a mensagem clicando fora da mensagem
     Então a mensagem deve ser fechada
+
+
+# Cenários não mais necessários:
+
+# @usuarioCriado
+# Cenário: Usuário deve conseguir logar mesmo sem diferenciar as letras minúsculas e maiúsculas do email criado
+#     Dado que criei um usuário com um email todo em caps lock
+#     Quando tento logar com o mesmo email mas todo com letras minúscuals
+#     Então o login deve ser realizado com sucesso

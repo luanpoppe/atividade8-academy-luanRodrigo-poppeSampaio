@@ -40,10 +40,6 @@ Given('que sei o email de um usuário cadastrado todo em caps lock', function ()
     })
 })
 
-Given('tento criar um usuário sem preencher nenhum dos campos obrigatórios', function () {
-    pgCadastro.clickCadastrar()
-})
-
 
 // region: WHEN
 
@@ -66,6 +62,10 @@ When('crio um usuário', function () {
     pgCadastro.criarUsuario().then(function (resposta) {
         userCreated = resposta
     })
+})
+
+When('tento criar um usuário sem preencher nenhum dos campos obrigatórios', function () {
+    pgCadastro.clickCadastrar()
 })
 
 When('tento criar usuário sem passar um nome', function () {
@@ -209,15 +209,6 @@ When('tento criar um usuário passando uma senha de {int} dígitos', function (t
     pgCadastro.clickCadastrar()
 })
 
-When('Quando tento criar um usuário com um email já existente porém todo com letras em caps lock', function () {
-    pgCadastro.digitarNome(user.name)
-    pgCadastro.digitarEmail(user.email)
-    pgCadastro.digitarSenha(user.password)
-    pgCadastro.digitarConfirmarSenha(user.password)
-
-    pgCadastro.clickCadastrar()
-})
-
 // region: THEN
 
 Then('a página deve conter informações sobre o cadastro de usuários', function () {
@@ -227,17 +218,20 @@ Then('a página deve conter informações sobre o cadastro de usuários', functi
     cy.get("label").should("contain.text", "Nome:").and("contain.text", "E-mail:").and("contain.text", 'Senha').and("contain.text", "Confirmar senha:")
 })
 
-Then('deve aparecer uma mensagem de sucesso', function () {
+Then('deve ser mostrado uma mensagem de sucesso', function () {
     cy.wait('@cadastroUsuario').then(function (resposta) {
         userCreated = resposta.response.body
         userCreated.password = user.password
     })
-    cy.contains("Cadastro realizado!")
-    cy.contains("h3", "Sucesso")
+    cy.get(pgCadastro.modal).should("contain.text", "Cadastro realizado!")
+    cy.get(pgCadastro.modal).contains("h3", "Sucesso").should("exist")
 })
 
-Then('o seu tipo deve ser comum', function () {
+Then('sua conta deve ser do tipo comum', function () {
     cy.wrap(userCreated).its("type").should("equal", 0)
+    cy.contains("a", "Perfil").click()
+    cy.get('[href="/account"]').click()
+    cy.get('.account-form [name="type"]').should("have.value", 0)
 })
 
 Then('deve aparecer um aviso informando que o nome é obrigatório', function () {
@@ -296,15 +290,22 @@ Then('deve aparecer uma mensagem informando falha no cadastro', function () {
 })
 
 Then('deve ser realizado o login automaticamente do usuário criado', function () {
+    cy.contains("a", "Perfil").should("not.exist")
     cy.wait('@logarUsuario').then(function (resposta) {
         expect(resposta.response.statusCode).to.equal(200)
+        cy.contains("a", "Perfil").should("exist")
     })
 })
 
 Then('as opções de navegação devem mudar para condizer com o usuário logado', function () {
-    cy.get(pgCadastro.header).find("a").should("contain.text", "Perfil")
-    cy.get(pgCadastro.header).find("a").should("not.contain.text", "Registre-se")
-    cy.get(pgCadastro.header).find("a").should("not.contain.text", "Login")
+    cy.get(pgCadastro.header).find("a").should("not.contain.text", "Perfil")
+    cy.get(pgCadastro.header).find("a").should("contain.text", "Registre-se")
+    cy.get(pgCadastro.header).find("a").should("contain.text", "Login")
+    cy.wait('@logarUsuario').then(function (resposta) {
+        cy.get(pgCadastro.header).find("a").should("contain.text", "Perfil")
+        cy.get(pgCadastro.header).find("a").should("not.contain.text", "Registre-se")
+        cy.get(pgCadastro.header).find("a").should("not.contain.text", "Login")
+    })
 })
 
 Then('deve aparecer mensagem informando o erro {string}', function (mensagem) {

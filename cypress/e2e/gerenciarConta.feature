@@ -32,7 +32,7 @@ Cenário: Usuário deve conseguir ver informações sobre sua própria conta na 
 Cenário: Usuário só deve poder alterar senha após clicar no botão que libera tal funcionalidade
     Dado que fiz o login com um usuário
     Quando acesso a seção do site de gerenciar conta
-    Então só devo poder alterar a senha após clicar no botão que libera tal funcionalidade
+    Então só deve ser possível alterar a senha após clicar no botão que libera tal funcionalidade
 
 @userCreated
 Cenário: Usuário deve conseguir cancelar a operação de alterar uma senha
@@ -125,24 +125,24 @@ Cenário: Usuário não deve conseguir atualizar sua senha sem passar um valor d
 @userCreated
 Cenário: Deve ser possível fechar mensagem de sucesso ao alterar informações do usuário ao clicar no botão disponível para isso
     Dado que sou um usuário do tipo comum
-    E alterei as informações do usuário
+    E que alterei as informações do usuário
     Quando tento fechar a mensagem de sucesso clicando no botão disponível
     Então a mensagem de sucesso deve ser fechada
 
 @userCreated
 Cenário: Deve ser possível fechar mensagem de sucesso ao alterar informações do usuário ao clicar fora da mensagem
     Dado que sou um usuário do tipo comum
-    E alterei as informações do usuário
+    E que alterei as informações do usuário
     Quando tento fechar a mensagem de sucesso clicando fora da mensagem
     Então a mensagem de sucesso deve ser fechada
 
 Cenário: Apenas um usuário logado pode acessar a seção de perfil de um usuário
     Quando tento acessar a seção de perfil sem estar logado com um usuário
-    Então sou redirecionado para a página de login
+    Então devo ser redirecionado para a página de login
 
 Cenário: Apenas um usuário logado pode acessar a seção de alterar informações de um usuário
     Quando tento acessar a seção de gerenciamento de conta sem estar logado com um usuário
-    Então sou redirecionado para a página de login
+    Então devo ser redirecionado para a página de login
 @userCreated
 Cenário: Reviews de filmes do usuário devem aparecer na página de perfil do usuário
     Dado que fiz o login com um usuário

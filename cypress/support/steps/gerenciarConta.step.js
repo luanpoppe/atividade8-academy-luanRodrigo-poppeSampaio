@@ -39,6 +39,17 @@ Given('que sou um usuário do tipo comum', function () {
     })
 })
 
+Given('que alterei as informações do usuário', function () {
+    cy.intercept('PUT', '/api/users/*').as('salvarUsuario')
+    cy.contains("a", "Perfil").click()
+    cy.get(pgPerfil.buttonGerenciarConta).click()
+
+    userCreated.name = "Novo Nome"
+    cy.get(pgGerenciamento.inputName).clear().type(userCreated.name)
+
+    pgGerenciamento.clickSalvar()
+})
+
 When('acesso a página de perfil', function () {
     cy.intercept('GET', '/api/users/review/all', {
         fixture: "filmesUsuario.json"
@@ -125,17 +136,6 @@ When('tento alterar a senha do usuário sem passar um valor na confirmação da 
     pgGerenciamento.clickSalvar()
 })
 
-When('alterei as informações do usuário', function () {
-    cy.intercept('PUT', '/api/users/*').as('salvarUsuario')
-    cy.contains("a", "Perfil").click()
-    cy.get(pgPerfil.buttonGerenciarConta).click()
-
-    userCreated.name = "Novo Nome"
-    cy.get(pgGerenciamento.inputName).clear().type(userCreated.name)
-
-    pgGerenciamento.clickSalvar()
-})
-
 When('tento fechar a mensagem de sucesso clicando no botão disponível', function () {
     cy.get(pgGerenciamento.modalBotao).click()
 })
@@ -153,7 +153,7 @@ When('tento acessar a seção de gerenciamento de conta sem estar logado com um 
 })
 
 When('vejo os filmes da seção "minha avaliação"', function () {
-
+    cy.get(pgPerfil.tituloReviews).should("contain.text", "Minhas avaliações")
 })
 
 Then('deve ser possível ver as informações sobre o usuário logado', function () {
@@ -194,7 +194,7 @@ Then('não deve ser possível alterar o email da conta', function () {
     cy.get(pgGerenciamento.inputEmail).should('be.disabled')
 })
 
-Then('só devo poder alterar a senha após clicar no botão que libera tal funcionalidade', function () {
+Then('só deve ser possível alterar a senha após clicar no botão que libera tal funcionalidade', function () {
     cy.get(pgGerenciamento.inputSenha).should('be.disabled')
     cy.get(pgGerenciamento.inputConfirmarSenha).should('be.disabled')
 
@@ -284,12 +284,11 @@ Then('a mensagem de sucesso deve ser fechada', function () {
     cy.get(pgGerenciamento.modal).should("not.exist")
 })
 
-Then('sou redirecionado para a página de login', function () {
+Then('devo ser redirecionado para a página de login', function () {
     cy.location("pathname").should("equal", "/login")
 })
 
 Then('deve ser possível ver as avaliações', function () {
-    cy.get(pgPerfil.tituloReviews).should("contain.text", "Minhas avaliações")
     cy.get(`${pgPerfil.divReviews} > div`).should("have.length", 2)
     cy.get(pgPerfil.titulosFilmes).eq(0).should("have.text", "Senhor dos Anéis")
     cy.get(pgPerfil.titulosFilmes).eq(1).should("have.text", "Mad max")
