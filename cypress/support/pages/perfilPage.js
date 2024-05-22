@@ -10,4 +10,9 @@ export class PerfilPage {
 
     buttonLogout = '[href="/logout"]'
     buttonGerenciarConta = '[href="/account"]'
+
+    tituloReviews = ".ratings h2"
+    divReviews = ".ratings .ratings-container"
+    titulosFilmes = ".ratings .review-card-header"
+    estrelasAvaliacoes = ".ratings .stars"
 }

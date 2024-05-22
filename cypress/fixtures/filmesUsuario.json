@@ -1,0 +1,18 @@
+[
+  {
+    "id": 100,
+    "movieId": 50,
+    "movieTitle": "Senhor dos Anéis",
+    "score": 4,
+    "reviewText": "Excelente filme",
+    "reviewType": 0
+  },
+  {
+    "id": 150,
+    "movieId": 75,
+    "movieTitle": "Mad max",
+    "score": 5,
+    "reviewText": "Muito bom!!",
+    "reviewType": 0
+  }
+]

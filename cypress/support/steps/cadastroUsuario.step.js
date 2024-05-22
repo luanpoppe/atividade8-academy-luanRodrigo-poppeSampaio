@@ -29,7 +29,7 @@ After({ tags: "@userCreated" }, function () {
 
 Given('que acessei a página de cadastrar usuário', function () {
     cy.visit("/")
-    cy.contains("Registre-se").click()
+    cy.get('.navbar [href="/register"]').click()
 })
 
 Given('que sei o email de um usuário já cadastrado', function () {
@@ -60,7 +60,6 @@ When('tento realizar o cadastro', function () {
 When('crio um usuário', function () {
     pgCadastro.criarUsuario().then(function (resposta) {
         userCreated = resposta
-        cy.log('userCreated', userCreated)
     })
 })
 
@@ -118,7 +117,7 @@ When('tento fechar a mensagem clicando fora da mensagem', function () {
 When('tento criar um usuário com um email já utilizado por outro usuário', function () {
     api.createUser().then(function (resposta) {
         user2 = resposta
-    }).then(function (resposta) {
+    }).then(function () {
         const newUser = {
             name: user.name,
             email: user2.email,
@@ -172,11 +171,6 @@ When('tento cadastrar com uma senha muito longa', function () {
 })
 
 When('tento cadastrar com qualquer valor de nome {string}', function (nome) {
-    user = {
-        name: faker.person.firstName(),
-        email: faker.internet.email(),
-        password: faker.internet.password(8),
-    }
 
     pgCadastro.digitarNome(nome)
     pgCadastro.digitarEmail(user.email)
@@ -225,26 +219,26 @@ Then('o seu tipo deve ser comum', function () {
 Then('deve aparecer um aviso informando que o nome é obrigatório', function () {
     cy.get('@cadastroUsuario').should("not.exist")
     cy.get(".input-error").should("have.length", 1)
-    cy.get(".input-container").its(0).find(".input-error").should("contain.text", "Informe o nome")
+    pgCadastro.mensagemDeErro(0).should("contain.text", "Informe o nome")
 })
 
 Then('deve aparecer um aviso informando que o email é obrigatório', function () {
     cy.get('@cadastroUsuario').should("not.exist")
-    cy.get(".input-container").its(1).find(".input-error").should("have.length", 1)
-    cy.get(".input-error").should("contain.text", "Informe o e-mail")
+    cy.get(".input-error").should("have.length", 1)
+    pgCadastro.mensagemDeErro(1).should("contain.text", "Informe o e-mail")
 })
 
 Then('deve aparecer um aviso informando que a senha é obrigatória', function () {
     cy.get('@cadastroUsuario').should("not.exist")
     cy.get(".input-error").should("have.length", 2)
-    cy.get(".input-container").eq(2).find(".input-error").should("contain.text", "Informe a senha")
-    cy.get(".input-container").eq(3).find(".input-error").should("contain.text", "As senhas devem ser iguais.")
+    pgCadastro.mensagemDeErro(2).should("contain.text", "Informe a senha")
+    pgCadastro.mensagemDeErro(3).should("contain.text", "As senhas devem ser iguais.")
 })
 
 Then('deve aparecer um aviso informando que é obrigatório repetir a senha', function () {
     cy.get('@cadastroUsuario').should("not.exist")
     cy.get(".input-error").should("have.length", 1)
-    cy.get(".input-container").eq(3).find(".input-error").should("contain.text", "Informe a senha")
+    pgCadastro.mensagemDeErro(3).should("contain.text", "Informe a senha")
 })
 
 Then('deve aparecer as mensagens referentes aos campos obrigatórios', function () {
@@ -255,8 +249,8 @@ Then('deve aparecer as mensagens referentes aos campos obrigatórios', function 
 })
 
 Then('deve aparecer uma mensagem informando não ser possível realizar a operação', function () {
-    cy.get(".modal-body").contains("E-mail já cadastrado. Utilize outro e-mail").should("exist")
-    cy.get(".modal-body").contains("h3", "Falha no cadastro.").should("exist")
+    cy.get(pgCadastro.modal).contains("E-mail já cadastrado. Utilize outro e-mail").should("exist")
+    cy.get(pgCadastro.modal).contains("h3", "Falha no cadastro.").should("exist")
 })
 
 Then('a mensagem deve ser fechada', function () {
@@ -265,7 +259,8 @@ Then('a mensagem deve ser fechada', function () {
 
 Then('deve aparecer uma mensagem de erro no cadastro {string}', function (mensagem) {
     cy.get('@cadastroUsuario').should("not.exist")
-    pgCadastro.mensagemDeErro(0).should("contain.text", mensagem)
+    cy.get(".input-error").should("have.length", 1)
+    pgCadastro.mensagemDeErro(3).should("contain.text", mensagem)
 })
 
 Then('deve aparecer uma mensagem informando falha no cadastro', function () {
@@ -289,6 +284,11 @@ Then('as opções de navegação devem mudar para condizer com o usuário logado
 })
 
 Then('deve aparecer mensagem informando o erro {string}', function (mensagem) {
-    pgCadastro.mensagemDeErro(0).should("contain.text", mensagem)
-    pgCadastro.mensagemDeErro(1).should("contain.text", mensagem)
+    cy.get(".input-error").should("have.length", 2)
+    pgCadastro.mensagemDeErro(2).should("contain.text", mensagem)
+    pgCadastro.mensagemDeErro(3).should("contain.text", mensagem)
+})
+
+Then('sua conta conta deve estar ativa', function () {
+    cy.wrap(userCreated).its("active").should("equal", true)
 })

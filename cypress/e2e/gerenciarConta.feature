@@ -143,3 +143,9 @@ Cenário: Apenas um usuário logado pode acessar a seção de perfil de um usuá
 Cenário: Apenas um usuário logado pode acessar a seção de alterar informações de um usuário
     Quando tento acessar a seção de gerenciamento de conta sem estar logado com um usuário
     Então sou redirecionado para a página de login
+@userCreated @only
+Cenário: Reviews de filmes do usuário devem aparecer na página de perfil do usuário
+    Dado que fiz o login com um usuário
+    Quando acesso a página de perfil
+    E vejo os filmes da seção "minha avaliação"
+    Então deve ser possível ver as avaliações

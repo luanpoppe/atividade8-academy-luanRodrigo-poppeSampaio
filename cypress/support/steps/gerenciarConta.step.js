@@ -19,7 +19,6 @@ Given('que fiz o login com um usuário', function () {
     cy.visit("/login")
     api.createUser().then(function (resposta) {
         userCreated = resposta
-        cy.log('userCreated', userCreated)
     }).then(function () {
         pgLogin.logar(userCreated.email, userCreated.password)
     })
@@ -46,6 +45,9 @@ Given('que sou um usuário do tipo comum', function () {
 })
 
 When('acesso a página de perfil', function () {
+    cy.intercept('GET', '/api/users/review/all', {
+        fixture: "filmesUsuario.json"
+    }).as('reviews')
     cy.contains("a", "Perfil").click()
 })
 
@@ -153,6 +155,10 @@ When('tento acessar a seção de perfil sem estar logado com um usuário', funct
 
 When('tento acessar a seção de gerenciamento de conta sem estar logado com um usuário', function () {
     cy.visit("/account")
+})
+
+When('vejo os filmes da seção "minha avaliação"', function () {
+
 })
 
 Then('deve ser possível ver as informações sobre o usuário logado', function () {
@@ -285,4 +291,13 @@ Then('a mensagem de sucesso deve ser fechada', function () {
 
 Then('sou redirecionado para a página de login', function () {
     cy.location("pathname").should("equal", "/login")
+})
+
+Then('deve ser possível ver as avaliações', function () {
+    cy.get(pgPerfil.tituloReviews).should("contain.text", "Minhas avaliações")
+    cy.get(`${pgPerfil.divReviews} > div`).should("have.length", 2)
+    cy.get(pgPerfil.titulosFilmes).eq(0).should("have.text", "Senhor dos Anéis")
+    cy.get(pgPerfil.titulosFilmes).eq(1).should("have.text", "Mad max")
+    cy.get(pgPerfil.estrelasAvaliacoes).eq(0).find(".star.filled").should("have.length", "4")
+    cy.get(pgPerfil.estrelasAvaliacoes).eq(1).find(".star.filled").should("have.length", "5")
 })
